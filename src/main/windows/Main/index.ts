@@ -5,12 +5,14 @@ import { ENVIRONMENT } from 'shared/constants'
 import { createWindow } from 'main/factories'
 import { displayName } from '~/package.json'
 
+export * from './ipcs'
+
 export async function MainWindow() {
   const window = createWindow({
     id: 'main',
     title: displayName,
-    width: 700,
-    height: 473,
+    width: 900,
+    height: 673,
     show: false,
     center: true,
     movable: true,
@@ -19,6 +21,7 @@ export async function MainWindow() {
     autoHideMenuBar: true,
 
     webPreferences: {
+      nodeIntegration: true,
       preload: join(__dirname, '../preload/index.js'),
     },
   })

@@ -18,6 +18,7 @@
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
+    "useUnknownInCatchVariables": false,
     "noEmit": true,
     "baseUrl": ".",
     "paths": {

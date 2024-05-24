@@ -1,9 +1,9 @@
 module.exports = {
-  content: ['src/**/*.{js,jsx,ts,tsx}'],
+  content: ['./src/**/*.{js,jsx,ts,tsx}'],
   mode: 'jit',
   darkMode: 'class',
   daisyui: {
-    styled: true,
+    styled: false,
     base: true,
     utils: true,
     themes: ['corporate', 'black'],

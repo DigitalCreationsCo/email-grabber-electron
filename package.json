@@ -1,13 +1,13 @@
 {
-  "displayName": "My Awesome Electron App",
-  "name": "my-awesome-electron-app",
-  "description": "Your awesome app description",
+  "displayName": "Email Grabber",
+  "name": "email-grabber",
+  "description": "Find emails from websites",
   "version": "2.0.6",
   "main": "./node_modules/.dev/main/index.js",
   "resources": "src/resources",
   "author": {
-    "name": "Dalton Menezes",
-    "email": "daltonmenezes@outlook.com"
+    "name": "Digital Creations Co.",
+    "email": "bmejia220@gmail.com"
   },
   "license": "MIT",
   "scripts": {
@@ -28,8 +28,13 @@
     "@next-auth/prisma-adapter": "^1.0.7",
     "@paddle/paddle-js": "^1.1.0",
     "@prisma/client": "^5.14.0",
+    "axios": "^1.7.2",
+    "bottleneck": "^2.19.5",
+    "cheerio": "^1.0.0-rc.12",
     "electron-router-dom": "^1.0.5",
     "formik": "^2.4.6",
+    "puppeteer-core": "^22.9.0",
+    "puppeteer-in-electron": "^3.0.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",

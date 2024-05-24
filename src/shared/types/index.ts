@@ -15,3 +15,9 @@ export interface WindowCreationByIPC {
   window(): BrowserWindowOrNull
   callback(window: BrowserWindow, event: IpcMainInvokeEvent): void
 }
+
+export interface ScrapeEventByIPC {
+  channel: string
+  callback(event: IpcMainInvokeEvent, args?: any): void
+  // window(): Promise<BrowserWindowOrNull>
+}

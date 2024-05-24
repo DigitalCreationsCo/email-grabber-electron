@@ -16,7 +16,7 @@ export function registerAboutWindowCreationByIPC() {
 
       window.on('closed', () =>
         sender.send(channel, {
-          message: 'About window closed!',
+          message: 'About window closed',
         })
       )
     },

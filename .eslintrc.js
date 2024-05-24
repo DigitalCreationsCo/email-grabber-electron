@@ -11,6 +11,7 @@ module.exports = {
   },
   plugins: ['@typescript-eslint', 'prettier'],
   rules: {
+    '@typescript-eslint/use-unknown-in-catch-callback-variable': 'off',
     '@typescript-eslint/no-empty-interface': 0,
     'prettier/prettier': [
       'error',
