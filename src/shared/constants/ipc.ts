@@ -8,7 +8,12 @@ export const IPC = {
       GET_HREFS: 'scraper: get-hrefs',
       FIND_EMAILS: 'scraper: find-emails',
       RETURN_EMAILS: 'scraper: return-emails',
-      WHEN_SCRAPER_CLOSE: 'scraper: when-scraper-window-close',
+      STOP_SCRAPE: 'scraper: stop-scrape',
+      WHEN_SCRAPER_STOP: 'scraper: when-scraper-stop',
+    },
+    EXPORT: {
+      DOWNLOAD: 'export: download',
+      EMAILS: 'export: emails',
     },
   },
 }

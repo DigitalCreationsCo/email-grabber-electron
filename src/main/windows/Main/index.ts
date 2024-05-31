@@ -1,7 +1,7 @@
 import { BrowserWindow } from 'electron'
 import { join } from 'path'
 
-import { ENVIRONMENT } from 'shared/constants'
+import { ENVIRONMENT, IPC } from 'shared/constants'
 import { createWindow } from 'main/factories'
 import { displayName } from '~/package.json'
 
@@ -17,7 +17,7 @@ export async function MainWindow() {
     center: true,
     movable: true,
     resizable: false,
-    alwaysOnTop: true,
+    alwaysOnTop: false,
     autoHideMenuBar: true,
 
     webPreferences: {

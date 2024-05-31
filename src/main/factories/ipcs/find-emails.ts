@@ -1,10 +1,10 @@
-import { BrowserWindow, app, ipcMain } from 'electron'
+import { ipcMain } from 'electron'
 // import pie from 'puppeteer-in-electron'
-import puppeteer from 'puppeteer-core'
 import Bottleneck from 'bottleneck'
 
 import { ScrapeEventByIPC } from 'shared/types'
 import { extractEmailsFromUrl } from 'shared/utils/extract-emails'
+import { IPC } from 'shared/constants'
 
 // Initialize a rate limiter
 const limiter = new Bottleneck({
@@ -12,28 +12,47 @@ const limiter = new Bottleneck({
   maxConcurrent: 1, // Maximum number of concurrent requests
 })
 
-export function findEmails({ channel, callback }: ScrapeEventByIPC) {
-  ipcMain.handle(channel, async (event, ...args) => {
-    const [hrefs] = args
+export function findEmails({ callback }: ScrapeEventByIPC) {
+  let controller: AbortController
+  ipcMain.handle(IPC.WINDOWS.SCRAPER.STOP_SCRAPE, async () => {
+    controller.abort()
+  })
 
-    const email = '@email.com'
-    // const emails = new Set()
-    // // Use the limiter to add rate limiting to the extraction process
-    // for (const url of urls) {
-    //   await limiter.schedule(async () => {
-    //     const urlEmails = await extractEmailsFromUrl(url)
-    //     urlEmails.forEach((email) => emails.add(email))
-    //   })
-    // }
+  ipcMain.handle(IPC.WINDOWS.SCRAPER.FIND_EMAILS, async (event, ...args) => {
+    controller = new AbortController()
+    const signal = controller.signal
+    const [hrefs, headers] = args
 
-    // console.info('emails', Array.from(emails))
+    let emails = new Set<string>()
+    try {
+      for (const url of hrefs) {
+        console.info('extracting from url: ', url)
+        // Use the limiter to add rate limiting to the extraction process
+        await limiter.schedule(async () => {
+          emails = await extractEmailsFromUrl(emails, url, signal)
 
-    // window!.destroy()
-    // await browser.close()
+          callback(event, {
+            channel: IPC.WINDOWS.SCRAPER.RETURN_EMAILS,
+            emails: Array.from(emails),
+          })
+        })
+      }
+    } catch (error) {
+      if (error.message === 'canceled') {
+        callback(event, {
+          channel: IPC.WINDOWS.SCRAPER.WHEN_SCRAPER_STOP,
+          emails: Array.from(emails),
+          message: 'DONE',
+        })
+      } else {
+        console.error('An error occurred:', error)
+      }
+    }
 
-    // window!.on('closed', () => (window = null))
-
-    // callback && callback(event, { emails })
-    callback && callback(event, { email })
+    callback(event, {
+      channel: IPC.WINDOWS.SCRAPER.WHEN_SCRAPER_STOP,
+      emails: Array.from(emails),
+      message: 'DONE',
+    })
   })
 }

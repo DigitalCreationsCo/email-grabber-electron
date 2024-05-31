@@ -1,23 +1,22 @@
 import { ipcMain } from 'electron'
-
 import { findEmails, getHrefs } from 'main/factories'
 import { IPC } from 'shared/constants'
 
 export function registerScraperHandler() {
   getHrefs({
-    channel: IPC.WINDOWS.SCRAPER.GET_HREFS,
-    callback({ sender }, { hrefs }) {
-      sender.send(IPC.WINDOWS.SCRAPER.GET_HREFS, {
+    callback({ sender }, { channel, hrefs }) {
+      sender.send(channel, {
         hrefs,
       })
     },
   })
 
   findEmails({
-    channel: IPC.WINDOWS.SCRAPER.FIND_EMAILS,
-    callback({ sender }, { email }) {
-      const channel = IPC.WINDOWS.SCRAPER.RETURN_EMAILS
-      sender.send(channel, { email })
+    callback({ sender }, { channel, ...args }) {
+      if (channel === IPC.WINDOWS.SCRAPER.WHEN_SCRAPER_STOP) {
+        ipcMain.removeHandler(channel)
+      }
+      sender.send(channel, { ...args })
     },
   })
 }

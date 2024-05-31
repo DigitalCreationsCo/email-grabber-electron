@@ -17,7 +17,15 @@ export interface WindowCreationByIPC {
 }
 
 export interface ScrapeEventByIPC {
-  channel: string
-  callback(event: IpcMainInvokeEvent, args?: any): void
-  // window(): Promise<BrowserWindowOrNull>
+  callback(
+    event: IpcMainInvokeEvent,
+    args: {
+      channel: string
+      hrefs?: string[]
+      emails?: string[]
+      message?: 'DONE'
+    }
+  ): void
 }
+
+export type GetHrefsArgs = [string, number?, string[]?]

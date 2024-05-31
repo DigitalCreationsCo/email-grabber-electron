@@ -31,6 +31,8 @@
     "axios": "^1.7.2",
     "bottleneck": "^2.19.5",
     "cheerio": "^1.0.0-rc.12",
+    "csv-writer": "^1.6.0",
+    "electron-dl": "^4.0.0",
     "electron-router-dom": "^1.0.5",
     "formik": "^2.4.6",
     "puppeteer-core": "^22.9.0",

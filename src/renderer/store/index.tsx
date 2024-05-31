@@ -6,13 +6,18 @@ export interface WindowStore {
     setAboutWindowState: (value: boolean) => void
   }
   scraper: {
-    isFetching: boolean
-    setFetchStatus: (value: boolean) => void
-    hrefs: string[]
     status: string
-    setScraperStatus: (status: string) => void
+    setStatus: (status: string) => void
+
+    isFetching: boolean
+    setIsFetching: (value: boolean) => void
+
+    hrefs: string[]
     setHrefs: (hrefs: string[]) => void
-    setScraperWindowState: (value: boolean) => void
+
+    isScraping: boolean
+    setIsScraping: (value: boolean) => void
+
     emails: string[]
     setEmails: (emails: string[]) => void
     addEmail: (email: string) => void
@@ -33,13 +38,17 @@ export function WindowStoreProvider({
   const [state, setState] = useState<WindowStore>({
     about: { isOpen: false, setAboutWindowState },
     scraper: {
-      isFetching: false,
-      setFetchStatus,
       status: '',
+      setStatus,
+
+      isFetching: false,
+      setIsFetching,
+
+      isScraping: false,
+      setIsScraping,
+
       hrefs: [],
       setHrefs,
-      setScraperStatus,
-      setScraperWindowState,
       emails: [],
       setEmails,
       addEmail,
@@ -56,17 +65,17 @@ export function WindowStoreProvider({
     }))
   }
 
-  function setScraperWindowState(value: boolean) {
+  function setIsScraping(value: boolean) {
     setState((state) => ({
       ...state,
       scraper: {
         ...state.scraper,
-        isFetching: value,
+        isScraping: value,
       },
     }))
   }
 
-  function setFetchStatus(value: boolean) {
+  function setIsFetching(value: boolean) {
     setState((state) => ({
       ...state,
       scraper: {
@@ -86,7 +95,7 @@ export function WindowStoreProvider({
     }))
   }
 
-  function setScraperStatus(status: string) {
+  function setStatus(status: string) {
     setState((state) => ({
       ...state,
       scraper: {

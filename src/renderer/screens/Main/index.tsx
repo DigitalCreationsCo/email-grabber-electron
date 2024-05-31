@@ -1,9 +1,8 @@
 import { useNavigate } from 'react-router-dom'
 import { useEffect, useState } from 'react'
-
 import { Container, Heading, Button } from 'renderer/components'
 import { useWindowStore } from 'renderer/store'
-import { ipcMain } from 'electron'
+import { dialog } from 'electron'
 
 const { App } = window
 
@@ -12,39 +11,93 @@ export function MainScreen() {
   const store = useWindowStore().scraper
 
   const [searchTerms, setSearchTerms] = useState('')
-  const [showEmails, setShowEmails] = useState(false)
+  const [showLinks, setShowLinks] = useState(false)
 
   useEffect(() => {
     App.sayHelloFromBridge()
+  }, [])
 
-    // App.whenScraperWindowClose(({ hrefs }) => {
-    //   store.setScraperWindowState(false)
-    // })
-    App.addEmails(({ email }) => {
-      store.setScraperStatus(`${store.emails.length} emails found!`)
-      store.addEmail(email)
+  useEffect(() => {
+    App.whenScraperStop(({ emails, message }) => {
+      store.setEmails(emails)
+      store.setStatus(`${emails.length} emails found.`)
+
+      if (message && message === 'DONE') {
+        store.setIsScraping(false)
+      }
+    })
+  }, [])
+
+  useEffect(() => {
+    App.addEmails(({ emails }) => {
+      store.setStatus(`Grabbing emails... ${emails.length} emails found.`)
+      store.setEmails(emails)
     })
   }, [])
 
   async function getHrefs() {
-    setShowEmails(false)
+    store.setHrefs([])
+    setShowLinks(true)
     // store.setEmails([])
 
-    store.setFetchStatus(true)
-    store.setScraperStatus('Searching for links...')
+    store.setIsFetching(true)
+    store.setStatus('Searching for links...')
 
     const hrefs = await App.getHrefs(searchTerms)
-    store.setScraperStatus(`${hrefs.length} links found!`)
+    store.setStatus(`${hrefs.length} links found. Click Find Emails`)
     store.setHrefs(hrefs)
 
-    store.setFetchStatus(false)
-    setSearchTerms('')
+    store.setIsFetching(false)
   }
 
   async function findEmails() {
-    store.setScraperStatus('Grabbing emails...')
+    store.setStatus('Grabbing emails...')
+    store.setIsScraping(true)
     App.findEmails(store.hrefs)
-    setShowEmails(true)
+    setShowLinks(false)
+  }
+
+  async function stopFindingEmails() {
+    App.stopScraping()
+  }
+
+  async function exportEmails() {
+    // App.exportEmails(store.emails)
+    // App.exportEmails(['test@gmail.com', 'test@gmail.com'])
+    // dialog
+    //   .showSaveDialog({
+    //     title: 'Select the File Path to save',
+    //     defaultPath: '../assets/sample.txt',
+    //     // defaultPath: path.join(__dirname, '../assets/'),
+    //     buttonLabel: 'Save',
+    //     // Restricting the user to only Text Files.
+    //     filters: [
+    //       {
+    //         name: 'Text Files',
+    //         extensions: ['txt', 'docx'],
+    //       },
+    //     ],
+    //     properties: [],
+    //   })
+    //   .then((file) => {
+    //     // Stating whether dialog operation was cancelled or not.
+    //     console.log(file.canceled)
+    //     if (!file.canceled) {
+    //       console.log(file.filePath!.toString())
+    //       // Creating and Writing to the sample.txt file
+    //       fs.writeFile(
+    //         file.filePath!.toString(),
+    //         'This is a Sample File',
+    //         function (err) {
+    //           if (err) throw err
+    //           console.log('Saved!')
+    //         }
+    //       )
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log(err)
+    //   })
   }
 
   return (
@@ -61,22 +114,33 @@ export function MainScreen() {
         value={searchTerms}
         onChange={(e) => setSearchTerms(e.target.value)}
       />
-      <div className="flex justify-between">
-        <Button onClick={getHrefs}>{`Get ${searchTerms} links`}</Button>
+      <div className="flex gap-x-6">
+        <Button
+          disabled={store.isScraping}
+          onClick={getHrefs}
+        >{`Get ${searchTerms} links`}</Button>
         <Button
           disabled={store.isFetching || store.hrefs.length === 0}
-          onClick={findEmails}
-        >{`Find emails`}</Button>
+          onClick={store.isScraping ? stopFindingEmails : findEmails}
+        >
+          {store.isScraping ? `Stop` : `Find emails`}
+        </Button>
+        <Button
+          // disabled={store.isScraping || store.emails.length === 0}
+          onClick={exportEmails}
+        >
+          {`Export`}
+        </Button>
       </div>
       <ul>
         {<li className="font-bold">{store.status}</li>}
 
-        {(!showEmails &&
+        {(showLinks &&
           store.hrefs.map((href, index) => (
             <li key={`link-${index}`}>{href}</li>
           ))) || <></>}
 
-        {showEmails &&
+        {!showLinks &&
           store.emails.map((email, index) => (
             <li key={`email-${index}`}>{email}</li>
           ))}
